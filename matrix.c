@@ -1,28 +1,11 @@
 #include "matrix.h"
 
-void createVector(Vector *v,double *e,int dim){
-	v->element=e;
-	v->dim=dim;
-}
-void createMatrix(Matrix *m,double *e,int row,int column){
-	m->row=row;
-	m->column=column;
-	m->element=e;
-}
-void createSQMatrix(SQMatrix *m,double *e,int dim){
-	m->element=e;
-	m->row=dim;
-	m->column=dim;
-}
-double inner(Vector *a,Vector *b){
+double inner(double *a,double *b,int dim){
 	int dim,i;
 	double *p,*q;
 	double value=0.0;
-	if((dim=a->dim)!=b->dim){
-		printf("dim dont match");
-		exit(1);
-	}
-	p=a->element;q=b->element;
+	p=a;
+	q=b;
 	for(i=0;i<dim;i++){
 		value+=(*p++)*(*q++);
 	}
@@ -211,36 +194,6 @@ void GS(SQMatrix *A,Vector *b,Vector *x){
 	printf("GS method takes %d steps\n",counter);
 	free(dlist);
 
-}
-
-int main(void){
-	int i;
-	Vector v1,v2;
-	SQMatrix m1;
-	// double a[4]={1.0,2.0,3.0,2.0};
-	// double x[4]={1.0,1.0,1.0,1.0};
-	// double N[16]={3.0,2.0,1.0,0.0,3.0,5.0,-3.0,-2.0,0.0,-1.0,6.0,9.0,4.0,3.0,-2.0,1.0};
-	// createVector(&v1,a,4);
-	// createSQMatrix(&m1,N,4);
-	// createVector(&v2,x,4);
-	double a[2]={1.0,3.0};
-	double x[2]={1.0,5.0};
-	double N[4]={1.0,2.0,-1.0,4.0};
-	createVector(&v1,a,2);
-	createSQMatrix(&m1,N,2);
-	createVector(&v2,x,2);
-	
-	// GaussianEliminate(&m1,&v1);
-	// for(i=0;i<4;i++){
-	// 	printf("x_%d:%f\n",i,v1.element[i]);
-	// }
-	// Jacobi(&m1,&v1,&v2);
-	GS(&m1,&v1,&v2);
-	for(i=0;i<2;i++){
-		printf("x_%d:%f\n",i,v2.element[i]);
-	}
-
-	return 0;
 }
 
 
