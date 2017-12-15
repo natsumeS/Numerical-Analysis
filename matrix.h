@@ -14,8 +14,10 @@ typedef struct{
 
 void createVector(Vector *v,double *e,int dim);
 void createMatrix(Matrix *m,double *e,int row,int column);
-void createSQMatrix(SQMatrix *m,double *e,int dim);
+void createSQMatrix(Matrix *m,double *e,int dim);
 double inner(Vector *a,Vector *b);
-Vector *MVprod(Matrix *M,Vector *v);
+void MVprod(Matrix *M,Vector *v,Vector *output);
 double norm2(Vector *v1,Vector *v2);
-void GaussianEliminate(SQMatrix *A,Vector *b);
+void GaussianEliminate(Matrix *A,Vector *b);
+void Jacobi(Matrix *A,Vector *b,Vector *x);
+void GS(SQMatrix *A,Vector *b,Vector *x);

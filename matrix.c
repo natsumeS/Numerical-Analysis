@@ -28,7 +28,7 @@ double inner(Vector *a,Vector *b){
 	}
 	return value;
 }
-Vector *MVprod(Matrix *M,Vector *v){
+void MVprod(Matrix *M,Vector *v,Vector *output){
 	int row,column,i,j;
 	double *p,*q,*r;
 	double sum;
@@ -37,14 +37,8 @@ Vector *MVprod(Matrix *M,Vector *v){
 		exit(1);
 	}
 	row=M->row;
-	Vector *output;
-	double *outv;
-	output=(Vector*)malloc(sizeof(Vector));
-	outv=(double*)malloc(row*sizeof(double));
-	output->dim=row;
-	output->element=outv;
 	p=M->element;
-	q=outv;
+	q=output->element;
 	for(i=0;i<row;i++){
 		sum=0.0;
 		r=v->element;
@@ -53,7 +47,6 @@ Vector *MVprod(Matrix *M,Vector *v){
 		}
 		(*q++)=sum;
 	}
-	return output;
 }
 double norm2(Vector *v1,Vector *v2){
 	double *p,*q;
@@ -133,18 +126,116 @@ void GaussianEliminate(SQMatrix *A,Vector *b){
 		}
 		(*p--)/=u;
 	}
+	free(indexlist);
 }
+void Jacobi(SQMatrix *A,Vector *b,Vector *x){
+	int i,counter,endflag,n=A->row,n1=n+1;
+	double e=1.0e-6;
+	double *p,*q,*r,*s,*dlist;
+	Vector *x2;
+	if(n!=A->column||n!=b->dim||n!=x->dim){
+		exit(1);
+	}
+	dlist=(double*)malloc(n*sizeof(double));
+	x2=(Vector*)malloc(sizeof(Vector));
+	x2->dim=n;
+	x2->element=(double*)malloc(n*sizeof(double));
+	//
+	p=A->element;
+	q=dlist;
+	for(i=0;i<n;i++){
+		(*q++)=*p;
+		*p=0.0;
+		p=p+n1;
+	}
+	//
+	counter=1;
+	do{
+		MVprod(A,x,x2);
+		p=dlist;
+		q=x2->element;
+		r=b->element;
+		s=x->element;
+		endflag=0;
+		for(i=0;i<n;i++){
+			*q=((*r++)-*q)/(*p++);
+			if(fabs(*q-*s)>e){
+				endflag=1;
+			}
+			*s++=*q++;
+		}
+		counter++;
+	}while(endflag);
+	printf("Jacobi method takes %d steps\n",counter);
+	//
+	free(dlist);
+	free(x2);
+}
+	double *p,*q,*r,*s,*t,*dlist,u;
+	double e=1.0e-6;
+	int i,j,counter,n=A->row,n1=n+1,endflag;
+	if(n!=A->column||n!=b->dim||n!=x->dim){
+		exit(1);
+	}
+	dlist=(double*)malloc(n*sizeof(double));
+	p=A->element;
+	q=dlist;
+	for(i=0;i<n;i++){
+		(*q++)=*p;
+		*p=0.0;
+		p=p+n1;
+	}
+	//
+	counter=0;
+	do{
+		p=A->element;
+		q=b->element;
+		r=dlist;
+		s=x->element;
+		endflag=0;
+		for(i=0;i<n;i++){
+			t=x->element;
+			u=0.0;
+			for(j=0;j<n;j++){
+				u+=(*p++)*(*t++);
+			}
+			u=((*q++)-u)/(*r++);
+			if(fabs(u-*s)>e){
+				endflag=1;
+			}
+			(*s++)=u;
+		}
+		counter++;
+	}while(endflag);
+	printf("GS method takes %d steps\n",counter);
+
+}
+
 int main(void){
 	int i;
-	double a[4]={1.0,2.0,3.0,2.0};
-	double N[16]={3.0,2.0,1.0,0.0,3.0,5.0,-3.0,-2.0,0.0,-1.0,6.0,9.0,4.0,3.0,-2.0,1.0};
-	Vector v1;
+	Vector v1,v2;
 	SQMatrix m1;
-	createVector(&v1,a,4);
-	createSQMatrix(&m1,N,4);
-	GaussianEliminate(&m1,&v1);
-	for(i=0;i<4;i++){
-		printf("x_%d:%f\n",i,v1.element[i]);
+	// double a[4]={1.0,2.0,3.0,2.0};
+	// double x[4]={1.0,1.0,1.0,1.0};
+	// double N[16]={3.0,2.0,1.0,0.0,3.0,5.0,-3.0,-2.0,0.0,-1.0,6.0,9.0,4.0,3.0,-2.0,1.0};
+	// createVector(&v1,a,4);
+	// createSQMatrix(&m1,N,4);
+	// createVector(&v2,x,4);
+	double a[2]={1.0,3.0};
+	double x[2]={1.0,5.0};
+	double N[4]={1.0,2.0,-1.0,4.0};
+	createVector(&v1,a,2);
+	createSQMatrix(&m1,N,2);
+	createVector(&v2,x,2);
+	
+	// GaussianEliminate(&m1,&v1);
+	// for(i=0;i<4;i++){
+	// 	printf("x_%d:%f\n",i,v1.element[i]);
+	// }
+	// Jacobi(&m1,&v1,&v2);
+	GS(&m1,&v1,&v2);
+	for(i=0;i<2;i++){
+		printf("x_%d:%f\n",i,v2.element[i]);
 	}
 
 	return 0;
