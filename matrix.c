@@ -66,7 +66,7 @@ double norm2(Vector *v1,Vector *v2){
 }
 void GaussianEliminate(SQMatrix *A,Vector *b){
 	int i,j,k,pivotindex,n=A->row,n1=n-1;
-	double *p,*q,*r,*output,**s,**t,**indexlist,maxv,u,v,*db;
+	double *p,*q,*r,**s,**t,**indexlist,maxv,u,v,*db;
 	if(n!=A->column||n!=b->dim){
 		exit(1);
 	}
@@ -171,6 +171,7 @@ void Jacobi(SQMatrix *A,Vector *b,Vector *x){
 	free(dlist);
 	free(x2);
 }
+void GS(SQMatrix *A,Vector *b,Vector *x){
 	double *p,*q,*r,*s,*t,*dlist,u;
 	double e=1.0e-6;
 	int i,j,counter,n=A->row,n1=n+1,endflag;
@@ -208,6 +209,7 @@ void Jacobi(SQMatrix *A,Vector *b,Vector *x){
 		counter++;
 	}while(endflag);
 	printf("GS method takes %d steps\n",counter);
+	free(dlist);
 
 }
 
