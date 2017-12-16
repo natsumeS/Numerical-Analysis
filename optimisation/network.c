@@ -5,6 +5,7 @@ Network *Network_create(int v_num){
 	n->from=(Edge**)malloc(v_num*sizeof(Edge*));
 	n->edgenumlist=(int *)malloc(v_num*sizeof(int));
 	n->vnum=v_num;
+	n->edgenum=0;
 	return n;
 }
 void Network_setVertex(Network *net,int *tolist,double *wlist,int edgenum,int vid){
@@ -22,11 +23,13 @@ void Network_setVertex(Network *net,int *tolist,double *wlist,int edgenum,int vi
 	}
 	*(net->from+vid)=elist;
 	*(net->edgenumlist+vid)=edgenum;
+	net->edgenum+=edgenum;
 }
 void Network_print(Network *net){
 	int i,j,vnum=net->vnum,*p;
 	Edge *e;
 	p=net->edgenumlist;
+	printf("---network---\nvnum:%d\nedgenum:%d\n",net->vnum,net->edgenum);
 	for(i=0;i<vnum;i++){
 		printf("%d->\n",i);
 		for(j=0;j<*p;j++){
