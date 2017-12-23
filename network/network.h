@@ -39,12 +39,12 @@ void Network::load(string filename){
 	}
 	getline(stream,token,',');
 	v_num=stoi(token);
-	e_num=0;
+	this->e_num=0;
 	enum_list=new int[v_num];
 	elist=(Edge**)malloc(v_num*sizeof(Edge*));
 	p=enum_list;
 	q=elist;
-	vid=0;
+	vid=-1;
 	//
 	while(getline(ifs,str)){
 		istringstream stream(str);
@@ -59,11 +59,11 @@ void Network::load(string filename){
 				*p++=e_num;
 				*q=(Edge*)malloc(e_num*sizeof(Edge));
 				r=*q++;
+				vid++;
 				break;
 			}else if(wflag){
 				(r++)->w=stof(token);
-				e_num++;
-				vid++;
+				this->e_num++;
 				break;
 			}
 			r->from=vid;
@@ -89,17 +89,4 @@ void Network::print(){
 		}
 		p++;
 	}
-}
-Edge *Kruskal(Network *net){
-
-
-}
-
-
-
-int main(void){
-	Network n;
-	n.load("p.csv");
-	n.print();
-	return 0;
 }
